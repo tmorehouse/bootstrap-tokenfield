@@ -34,7 +34,7 @@ jQuery(document).ready(function($) {
         }
       }
     })
-  }, 100)  
+  }, 100)
 
   /* Run examples */
   $('.token-example-field').tokenfield();
@@ -44,47 +44,51 @@ jQuery(document).ready(function($) {
       source: ['red','blue','green','yellow','violet','brown','purple','black','white'],
       delay: 100
     },
-    showAutocompleteOnFocus: true
+    showAutocompleteOnFocus: true,
+    delimiter: [',',' ', '-', '_']
   });
 
+  var engine = new Bloodhound({
+    local: [{value: 'red'}, {value: 'blue'}, {value: 'green'} , {value: 'yellow'}, {value: 'violet'}, {value: 'brown'}, {value: 'purple'}, {value: 'black'}, {value: 'white'}],
+    datumTokenizer: function(d) {
+      return Bloodhound.tokenizers.whitespace(d.value);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace
+  });
+  engine.initialize();
+
   $('#tokenfield-typeahead').tokenfield({
-    typeahead: {
-      name: 'tags',
-      local: ['red','blue','green','yellow','violet','brown','purple','black','white'],
-    }
+    typeahead: [null, { source: engine.ttAdapter() }]
   });
 
   $('#tokenfield-2')
-    .on('beforeCreateToken', function (e) {
-      var token = e.token.value.split('|')
-      e.token.value = token[1] || token[0]
-      e.token.label = token[1] ? token[0] + ' (' + token[1] + ')' : token[0]
+    .on('tokenfield:createtoken', function (e) {
+      var data = e.attrs.value.split('|')
+      e.attrs.value = data[1] || data[0]
+      e.attrs.label = data[1] ? data[0] + ' (' + data[1] + ')' : data[0]
     })
-    .on('afterCreateToken', function (e) {
+    .on('tokenfield:createdtoken', function (e) {
       // Über-simplistic e-mail validation
       var re = /\S+@\S+\.\S+/
-      var valid = re.test(e.token.value)
+      var valid = re.test(e.attrs.value)
       if (!valid) {
         $(e.relatedTarget).addClass('invalid')
       }
     })
-    .on('beforeEditToken', function (e) {
-      if (e.token.label !== e.token.value) {
-        var label = e.token.label.split(' (')
-        e.token.value = label[0] + '|' + e.token.value
+    .on('tokenfield:edittoken', function (e) {
+      if (e.attrs.label !== e.attrs.value) {
+        var label = e.attrs.label.split(' (')
+        e.attrs.value = label[0] + '|' + e.attrs.value
       }
     })
-    .on('removeToken', function (e) {
-      if (e.token.length > 1) {
-        var values = $.map(e.token, function (token) { return token.value });
-        alert(e.token.length + ' tokens removed! Token values were: ' + values.join(', '))
+    .on('tokenfield:removedtoken', function (e) {
+      if (e.attrs.length > 1) {
+        var values = $.map(e.attrs, function (attrs) { return attrs.value });
+        alert(e.attrs.length + ' tokens removed! Token values were: ' + values.join(', '))
       } else {
-        alert('Token removed! Token value was: ' + e.token.value)
-      } 
-    })
-    .on('preventDuplicateToken', function (e) {
-      alert('Duplicate detected! Token value is: ' + e.token.value)
+        alert('Token removed! Token value was: ' + e.attrs.value)
+      }
     })
     .tokenfield()
-  
+
 });

@@ -1,13 +1,27 @@
 Bootstrap Tokenfield
 ====================
+[![NPM version][npm-badge]](http://badge.fury.io/js/bootstrap-tokenfield)
+[![Build status][travis-badge]](https://travis-ci.org/sliptree/bootstrap-tokenfield)
+[npm-badge]: https://badge.fury.io/js/bootstrap-tokenfield.png
+[travis-badge]: https://travis-ci.org/sliptree/bootstrap-tokenfield.png?branch=master
 
 A jQuery tagging / tokenizer input plugin for Twitter's Bootstrap, by the guys from [Sliptree](https://sliptree.com)
 
 Check out the [demo and docs](http://sliptree.github.io/bootstrap-tokenfield/)
 
+### Installation
+
+Requirements: jQuery 1.9+, Bootstrap 3+ (only CSS)
+
+1. Install via npm or bower (recommended) or manually download the package
+2. Include `dist/bootstrap-tokenfield.js` or `dist/bootstrap-tokenfield.min.js` in your HTML
+3. Include `dist/css/bootstrap-tokenfield.css` in your HTML
+
 ### Usage
-	
-	$('input').tokenfield()
+
+```js	
+$('input').tokenfield()
+```
 
 ### Features
 
@@ -16,7 +30,50 @@ Check out the [demo and docs](http://sliptree.github.io/bootstrap-tokenfield/)
 * Select specific tokens with Ctrl + click and Shift + click
 * Twitter Typeahead and jQuery UI Autocomplete support
 
+### FAQ
+
+#### How can I prevent duplicate tokens from being entered?
+
+You can use the `tokenfield:createtoken` event for that. Check the `event.attrs` property for token value and label,
+and the run your duplicate detection logic. If it's a duplicate token, simply do `event.preventDefault()`.
+
+Here's a simple example that checks if token's value is equal to any of the existing tokens' values.
+
+```js
+$('#my-tokenfield').on('tokenfield:createtoken', function (event) {
+	var existingTokens = $(this).tokenfield('getTokens');
+	$.each(existingTokens, function(index, token) {
+		if (token.value === event.attrs.value)
+			event.preventDefault();
+	});
+});
+```
+
+#### And how about limiting tokens to my typeahead/autocomplete data?
+
+Similarly, using `tokenfield:createtoken`, you can check to see if a token exists in your autocomplete/typeahead
+data. This example checks if the given token already exists and stops its entry if it doesn't.
+
+```js
+$('#my-tokenfield').on('tokenfield:createtoken', function (event) {
+	var available_tokens = bloodhound_tokens.index.datums
+	var exists = true;
+	$.each(available_tokens, function(index, token) {
+		if (token.value === event.attrs.value)
+			exists = false;
+	});
+	if(exists === true)
+		event.preventDefault();
+})
+```
+
+
+
 ### Changelog
+
+See [release notes](https://github.com/sliptree/bootstrap-tokenfield/releases)
+
+Previous releases:
 
 0.10.0
 
@@ -42,7 +99,7 @@ Check out the [demo and docs](http://sliptree.github.io/bootstrap-tokenfield/)
 * Fixed: Removing multiple tokens returned wrong data #30
 * Fixed: If token is removed in beforeEdit event, no longer falls over #27, #28
 * Fixed: Change event was triggered on initialization #22
-* Fixed: When token is removed in beforeCreateToken event, no longer tries to create a token
+* Fixed: When token is removed in tokenfield:preparetoken event, no longer tries to create a token
 * Fixed: Pressing comma key was not handled reliably
 * New: `prevetDuplicateToken` event
 * Improved: Typeahead integration

@@ -14,9 +14,9 @@ title: Tokenfield for Bootstrap
     <title>Tokenfield for Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- jQuery UI CSS -->
-    <link href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" type="text/css" rel="stylesheet">
+    <link href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" type="text/css" rel="stylesheet">
     <!-- Bootstrap styling for Typeahead -->
     <link href="dist/css/tokenfield-typeahead.css" type="text/css" rel="stylesheet">
     <!-- Tokenfield CSS -->
@@ -36,7 +36,7 @@ title: Tokenfield for Bootstrap
     <div class="bs-header" id="content">
       <div class="container">
         <h1>Tokenfield for Bootstrap</h1>
-        <p>Advanced tagging/tokenizing plugin for input fields with a focus on keyboard and copy-paste support.</p>
+        <p>Advanced tagging/tokenizing plugin for jQuery and Twitter Bootstrap with a focus on keyboard and copy-paste support.</p>
         <ul id="feature-highlights">
           <li>Copy &amp; paste support</li>
           <li>Keyboard navigation</li>
@@ -45,7 +45,7 @@ title: Tokenfield for Bootstrap
           <li>Responsive</li>
         </ul>
         <div id="main-links">
-          <a id="download-master" href="https://github.com/sliptree/bootstrap-tokenfield/zipball/master" class="btn btn-primary">Download Development</a>     
+          <a id="download-master" href="https://github.com/sliptree/bootstrap-tokenfield/zipball/master" class="btn btn-primary">Download Development</a>
         </div>
       </div>
     </div>
@@ -62,9 +62,9 @@ title: Tokenfield for Bootstrap
               <li><a href="#methods">Methods</a></li>
               <li><a href="#events">Events</a></li>
               <li><a href="#keyboard">Keyboard support</a></li>
-              <li><a href="#copy-paste">Copy &amp; paste support</a></li>          
-              <li><a href="#validation-states">Validation states</a></li>              
-              <li><a href="#various-examples">Various examples</a></li>              
+              <li><a href="#copy-paste">Copy &amp; paste support</a></li>
+              <li><a href="#validation-states">Validation states</a></li>
+              <li><a href="#various-examples">Various examples</a></li>
             </ul>
           </div>
         </div>
@@ -74,8 +74,8 @@ title: Tokenfield for Bootstrap
             ================================================== -->
             <div class="bs-docs-section">
               <div class="page-header">
-                <h1 id="tokenfield">Tokenfield</h1>
-              </div>             
+                <h1 id="tokenfield">Tokenfield <small>%VERSION%</small></h1>
+              </div>
 
               <h2 id="examples">Examples</h2>
               <p>Create elegant taggable fields with copy/paste and keyboard support.</p>
@@ -113,11 +113,18 @@ $('#tokenfield').tokenfield({
 {% endhighlight %}
 
 {% highlight js %}
+var engine = new Bloodhound({
+  local: [{value: 'red'}, {value: 'blue'}, {value: 'green'} , {value: 'yellow'}, {value: 'violet'}, {value: 'brown'}, {value: 'purple'}, {value: 'black'}, {value: 'white'}],
+  datumTokenizer: function(d) {
+    return Bloodhound.tokenizers.whitespace(d.value);
+  },
+  queryTokenizer: Bloodhound.tokenizers.whitespace
+});
+
+engine.initialize();
+
 $('#tokenfield-typeahead').tokenfield({
-  typeahead: {
-    name: 'tags',
-    local: ['red','blue','green','yellow','violet','brown','purple','black','white'],
-  }
+  typeahead: [null, { source: engine.ttAdapter() }]
 });
 {% endhighlight %}
 
@@ -148,12 +155,6 @@ $('.tokenfield').tokenfield()
                       <td>string, array</td>
                       <td><code>[]</code></td>
                       <td>Tokens (or tags). Can be a string with comma-separated values (<code>"one,two,three"</code>), an array of strings (<code>["one","two","three"]</code>), or an array of objects (<code>[{ value: "one", label: "Einz" }, { value: "two", label: "Zwei" }]</code>)</td>
-                    </tr>
-                    <tr>
-                      <td>allowDuplicates</td>
-                      <td>boolean</td>
-                      <td><code>false</code></td>
-                      <td>Whether to allow duplicate tokens or not. A token is considered a duplicated if it's value matches an existing token's value. Therefore, it is possible to enter multiple tokens with the same label, if their values are diefferent.</td>
                     </tr>
                     <tr>
                       <td>limit</td>
@@ -187,9 +188,9 @@ $('.tokenfield').tokenfield()
                     </tr>
                     <tr>
                       <td>typeahead</td>
-                      <td>object</td>
-                      <td><code>{}</code></td>
-                      <td>Twitter Typeahead options</td>
+                      <td>array</td>
+                      <td><code>[]</code></td>
+                      <td>Arguments for Twitter Typeahead. The first argument should be an options hash (or <code>null</code> if you want to use the defaults). The second argument should be a dataset. You can add multiple datasets: <code>typeahead: [options, dataset1, dataset2]</code></td>
                     </tr>
                     <tr>
                       <td>createTokensOnBlur</td>
@@ -202,6 +203,18 @@ $('.tokenfield').tokenfield()
                       <td>string, array</td>
                       <td><code>','</code></td>
                       <td>A character or an array of characters that will trigger token creation on keypress event. Defaults to ',' (comma). Note - this does not affect Enter or Tab keys, as they are handled in the keydown event. The first delimiter will be used as a separator when getting the list of tokens or copy-pasting tokens.</td>
+                    </tr>
+                    <tr>
+                      <td>beautify</td>
+                      <td>boolean</td>
+                      <td><code>true</code></td>
+                      <td>Whether to insert spaces after each token when getting a comma-separated list of tokens. This affects both value returned by <code>getTokensList()<code> and the value of the original input field.</td>
+                    </tr>
+                    <tr>
+                      <td>inputType</td>
+                      <td>string</td>
+                      <td><code>'text'</code></td>
+                      <td>HTML type attribute for the token input. This is useful for specifying an HTML5 input type like <code>'email'</code>, <code>'url'</code> or <code>'tel'</code> which allows mobile browsers to show a specialized virtual keyboard optimized for different types of input. This only sets the type of the visible token input but does not touch the original input field. So you may set the original input to have <code>type="text"</code> but set this inputType option to <code>'email'</code> if you only want to take advantage of the email style keyboard on mobile, but don't want to enable HTML5 native email validation on the original hidden input.</td>
                     </tr>
                   </tbody>
                 </table>
@@ -239,14 +252,14 @@ $('#myField').tokenfield('createToken', 'purple');
 $('#myField').tokenfield('createToken', { value: 'violet', label: 'Violet' });
 {% endhighlight %}
 
-              <h4>.tokenfield('getTokens')</h4>
-              <p>Get an array of tokens from the input</p>
+              <h4>.tokenfield('getTokens', active)</h4>
+              <p>Get an array of tokens from the input. Set <code>active</code> to true to return only selected tokens.</p>
 {% highlight js %}
 $('#myField').tokenfield('getTokens');
 {% endhighlight %}
 
-              <h4>.tokenfield('getTokensList', separator)</h4>
-              <p>Get a comma-separated list of the tokens from the input. You can use an alternative separator by supplying also a <code>separator</code> argument.</p>
+              <h4>.tokenfield('getTokensList', delimiter, beautify, active)</h4>
+              <p>Get a comma-separated list of the tokens from the input. You can use an alternative separator by supplying also a <code>delimiter</code> argument. Setting <code>beautify</code> to false will prevent adding a space after each token. Set <code>active</code> to true to return only selected tokens.</p>
 {% highlight js %}
 $('#myField').tokenfield('getTokensList');
 $('#myField').tokenfield('getTokensList', '; ');
@@ -261,7 +274,25 @@ $('#myField').tokenfield('disable');
               <h4>.tokenfield('enable')</h4>
               <p>Enable tokenfield (just like a normal input field)</p>
 {% highlight js %}
-$('#myField').tokenfield('disable');
+$('#myField').tokenfield('enable');
+{% endhighlight %}
+
+              <h4>.tokenfield('readonly')</h4>
+              <p>Make tokenfield a readonly field (just like a normal input field)</p>
+{% highlight js %}
+$('#myField').tokenfield('readonly');
+{% endhighlight %}
+
+              <h4>.tokenfield('writeable')</h4>
+              <p>Make tokenfield writeable (just like a normal input field)</p>
+{% highlight js %}
+$('#myField').tokenfield('writeable');
+{% endhighlight %}
+
+              <h4>.tokenfield('destroy')</h4>
+              <p>Destroy tokenfield and restore original input</p>
+{% highlight js %}
+$('#myField').tokenfield('destroy');
 {% endhighlight %}
 
               <div class="bs-callout bs-callout-info">
@@ -283,24 +314,32 @@ $('#myField').tokenfield('disable');
                   </thead>
                   <tbody>
                    <tr>
-                     <td>beforeCreateToken</td>
-                     <td>This event fires when a token is all set up to be created, but before it is inserted into the DOM and event listeners are attached. You can use this event to manipulate token value and label by changing the appropriate values of <code>token</code> property of the event. See below for an example.</td>
+                     <td>tokenfield:initialize</td>
+                     <td>Fires after Tokenfield has been initialized.</td>
                    </tr>
                    <tr>
-                     <td>afterCreateToken</td>
-                     <td>This event is fired after the token has been created. Here, <code>token</code> property of the event is also available, but is basically read-only. You can also get a direct reference to the token DOM object via <code>e.relatedTarget</code>. The example below uses this to set an 'invalid' class on the newly created token if it does not pass validation.</td>
+                     <td>tokenfield:createtoken</td>
+                     <td>This event fires when a token is all set up to be created, but before it is inserted into the DOM and event listeners are attached. You can use this event to manipulate token value and label by changing the appropriate values of <code>attrs</code> property of the event. See below for an example. Calling <code>event.preventDefault()</code> or doing <code>return false</code> in the event handler will prevent the token from being created.</td>
                    </tr>
                    <tr>
-                     <td>beforeEditToken</td>
-                     <td>This event is fired just before a token is about to be edited. This allows you to manipluate the input field value before it is created. Again, to do this, manipluate the <code>token</code> property of the event. Here you can also access the token DOM object with <code>e.relatedTarget</code>.</td>
+                     <td>tokenfield:createdtoken</td>
+                     <td>This event is fired after the token has been created. Here, <code>attrs</code> property of the event is also available, but is basically read-only. You can also get a direct reference to the token DOM object via <code>e.relatedTarget</code>. The example below uses this to set an 'invalid' class on the newly created token if it does not pass validation.</td>
                    </tr>
                    <tr>
-                     <td>removeToken</td>
-                     <td>This event is fired after a token is removed. You will have access to <code>token</code> property of the event. This way, you can determine which token was removed.</td>
+                     <td>tokenfield:edittoken</td>
+                     <td>This event is fired just before a token is about to be edited. This allows you to manipluate the input field value before it is created. Again, to do this, manipluate the <code>attrs</code> property of the event. Here you can also access the token DOM object with <code>e.relatedTarget</code>. Calling <code>event.preventDefault()</code> or doing <code>return false</code> in the event handler will prevent the token from being edited.</td>
                    </tr>
                    <tr>
-                     <td>preventDuplicateToken</td>
-                     <td>This event is fired when <code>allowDuplicates</code> is set to <code>false</code> and a duplicate is being prevented from created. You can find out the offending token by looking at the <code>token</code> property of the event.</td>
+                     <td>tokenfield:editedtoken</td>
+                     <td>This event is fired when a token is ready for being edited. It means that the token has been replaced by an input field.</td>
+                   </tr>
+                   <tr>
+                     <td>tokenfield:removetoken</td>
+                     <td>This event is fired right before a token is removed. Here you can also access the token DOM object with <code>e.relatedTarget</code>. Calling <code>event.preventDefault()</code> or doing <code>return false</code> in the event handler will prevent the token from being removed. You can access token label and value by checking the <code>attrs</code> property of the event. Also, <code>e.relatedTarget</code> is a reference to the token DOM object.</td>
+                   </tr>
+                   <tr>
+                     <td>tokenfield:removedtoken</td>
+                     <td>This event is fired right after a token is removed from the DOM. You can access token label and value by checking the <code>attrs</code> property of the event.</td>
                    </tr>
                   </tbody>
                 </table>
@@ -310,40 +349,36 @@ $('#myField').tokenfield('disable');
               <p>When the user starts to edit the token, we merge token value and label together again.</p>
 
               <div class="bs-example">
-                <input type="text" class="form-control" id="tokenfield-2" value="me|me@example.com,you@example.com,not really an email" />
+                <input type="text" class="form-control" id="tokenfield-2" data-tokens="me|me@example.com,you@example.com,not really an email" />
               </div>
 
 {% highlight js %}
 $('#tokenfield')
 
-  .on('beforeCreateToken', function (e) {
-    var token = e.token.value.split('|')
-    e.token.value = token[1] || token[0]
-    e.token.label = token[1] ? token[0] + ' (' + token[1] + ')' : token[0]
+  .on('tokenfield:createtoken', function (e) {
+    var data = e.attrs.value.split('|')
+    e.attrs.value = data[1] || data[0]
+    e.attrs.label = data[1] ? data[0] + ' (' + data[1] + ')' : data[0]
   })
 
-  .on('afterCreateToken', function (e) {
+  .on('tokenfield:createdtoken', function (e) {
     // Über-simplistic e-mail validation
     var re = /\S+@\S+\.\S+/
-    var valid = re.test(e.token.value)
+    var valid = re.test(e.attrs.value)
     if (!valid) {
       $(e.relatedTarget).addClass('invalid')
     }
   })
 
-  .on('beforeEditToken', function (e) {
-    if (e.token.label !== e.token.value) {
-      var label = e.token.label.split(' (')
-      e.token.value = label[0] + '|' + e.token.value
+  .on('tokenfield:edittoken', function (e) {
+    if (e.attrs.label !== e.attrs.value) {
+      var label = e.attrs.label.split(' (')
+      e.attrs.value = label[0] + '|' + e.attrs.value
     }
   })
 
-  .on('removeToken', function (e) {
-    alert('Token removed! Token value was: ' + e.token.value)
-  })
-
-  .on('preventDuplicateToken', function (e) {
-    alert('Duplicate detected! Token value is: ' + e.token.value)
+  .on('tokenfield:removedtoken', function (e) {
+    alert('Token removed! Token value was: ' + e.attrs.value)
   })
 
   .tokenfield()
@@ -412,7 +447,7 @@ $('#tokenfield')
                   <span class="input-group-addon"><span class="glyphicon glyphicon-star"></span></span>
                 </div>
               </form>
-              
+
               <p>Using tokenfield with input group checkboxes and radio buttons</p>
 
               <form class="bs-example bs-example-form" role="form">
@@ -435,7 +470,7 @@ $('#tokenfield')
                   </div><!-- /.col-lg-6 -->
                 </div>
               </form>
-              
+
               <p>Using tokenfield with buttons in input groups</p>
 
               <form class="bs-example bs-example-form" role="form">
@@ -515,7 +550,7 @@ $('#tokenfield')
                 </div>
                 <button type="submit" class="btn btn-default">Search</button>
               </form>
-              
+
               <p>Tokenfield in horizontal form</p>
 
               <form class="bs-example form-horizontal">
@@ -543,7 +578,7 @@ $('#tokenfield')
                   </div>
                 </div>
               </form>
-              
+
               <p>Tokenfield with fluid and fixed widths (50%, 300px, etc...)</p>
 
               <form class="bs-example bs-example-form" role="form">
@@ -556,11 +591,11 @@ $('#tokenfield')
                   <input type="text" id="example-fixed-tokenfield" class="form-control token-example-field fixed-tokenfield" value="red,green,blue" />
                 </div>
                 <div class="form-group">
-                  <label for="example-fixed-tokenfield-2">Width: 400px (inline)</label>>
+                  <label for="example-fixed-tokenfield-2">Width: 400px (inline)</label>
                   <input type="text" id="example-fixed-tokenfield-2" class="form-control token-example-field" value="red,green,blue" style="width:400px;" />
                 </div>
               </form>
-              
+
               <p>Tokenfield with RTL direction</p>
 
               <form class="bs-example bs-example-form" role="form">
@@ -571,7 +606,7 @@ $('#tokenfield')
 
       </div><!-- // row -->
 
-    </div><!-- //container --> 
+    </div><!-- //container -->
 
     <footer class="bs-footer" role="contentinfo">
       <div class="container">
@@ -585,7 +620,7 @@ $('#tokenfield')
             </li>
             <li class="follow-btn">
               <a href="https://twitter.com/sliptree" class="twitter-follow-button" data-show-count="false">Follow @sliptree</a>
-              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script> 
+              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
             </li>
             <li class="tweet-btn">
               <a href="https://twitter.com/share" class="twitter-share-button" data-via="sliptree" data-hashtags="bootstrap-tokenfield">Tweet</a>
@@ -604,13 +639,13 @@ $('#tokenfield')
       </div>
     </footer>
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-    <script type="text/javascript" src="dist/bootstrap-tokenfield.js" charset="UTF-8"></script>   
-    <script type="text/javascript" src="docs-assets/js/scrollspy.js" charset="UTF-8"></script>   
-    <script type="text/javascript" src="docs-assets/js/affix.js" charset="UTF-8"></script>   
-    <script type="text/javascript" src="docs-assets/js/typeahead.js" charset="UTF-8"></script>   
-    <script type="text/javascript" src="docs-assets/js/docs.min.js" charset="UTF-8"></script>   
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="dist/bootstrap-tokenfield.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="docs-assets/js/scrollspy.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="docs-assets/js/affix.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="docs-assets/js/typeahead.bundle.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="docs-assets/js/docs.min.js" charset="UTF-8"></script>
 
     <script type="text/javascript">
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

@@ -1,9 +1,10 @@
 {
   "name": "bootstrap-tokenfield",
-  "version": "0.11.0",
-  "title": "Bootstrap Tokenfield",
+  "version": "0.12.1",
+  "title": "bootstrap-tokenfield",
   "author": {
-    "name": "Illimar Tambek"
+    "name": "ragulka",
+    "url": "https://github.com/ragulka"
   },
   "licenses": [
     {
@@ -16,13 +17,19 @@
   },
   "description": "Advanced tagging/tokenizing plugin for input fields with a focus on keyboard and copy-paste support.",
   "keywords": [
-    "tags",
+    "jquery",
+    "javascript",
     "bootstrap",
+    "tokenfield",
+    "tags",
+    "token",
     "input",
     "select",
-    "form",
-    "token"
+    "form"
   ],
   "homepage": "http://sliptree.github.io/bootstrap-tokenfield/",
-  "download": "https://github.com/sliptree/bootstrap-tokenfield/zipball/master"
+  "docs": "http://sliptree.github.io/bootstrap-tokenfield/",
+  "bugs": {
+    "url": "https://github.com/sliptree/bootstrap-tokenfield/issues"
+  }
 }
